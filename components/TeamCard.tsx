@@ -6,228 +6,146 @@ import StatusTimeline from "./StatusTimeline";
 
 type Props = { team: Team; rank: number };
 
-const GRADIENTS = [
-  ["#1a00d9","#5e9eff"],
-  ["#5e9eff","#1a00d9"],
-  ["#1a00d9","#fe6e06"],
-  ["#3a2fe8","#5e9eff"],
-  ["#fe6e06","#1a00d9"],
-];
-
-function twoLetters(name: string) {
-  const withoutPrefix = name.replace(/^Team\s+/i, "");
-  const parts = withoutPrefix.replace(/([A-Z])/g, " $1").trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return withoutPrefix.slice(0, 2).toUpperCase();
-}
-
-function memberTwoLetters(name: string) {
-  const p = name.trim().split(/\s+/);
-  return (p[0]?.[0] ?? "?").toUpperCase() + (p[1]?.[0] ?? "").toUpperCase();
-}
-
-function rankStyle(rank: number) {
-  if (rank === 1) return { bg: "#fe6e06", text: "#fff", glow: true };
-  if (rank === 2) return { bg: "#1a00d9", text: "#fff", glow: false };
-  if (rank === 3) return { bg: "#5e9eff", text: "#fff", glow: false };
-  return { bg: "#dbeaff", text: "#1a00d9", glow: false };
-}
-
 export default function TeamCard({ team, rank }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const g = GRADIENTS[rank % GRADIENTS.length];
-  const rs = rankStyle(rank);
-  const captain = team.members.find((m) => m.captain);
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   return (
     <div
-      onClick={() => setExpanded((v) => !v)}
-      className="relative bg-white rounded-2xl mb-3 overflow-hidden cursor-pointer transition-all duration-300"
-      style={{
-        border: expanded ? "1.5px solid #5e9eff" : "1.5px solid #e0e8ff",
-        boxShadow: expanded
-          ? "0 8px 40px rgba(26,0,217,0.16), 0 2px 8px rgba(26,0,217,0.08)"
-          : "0 1px 4px rgba(26,0,217,0.05)",
-        transform: expanded ? "translateY(-2px)" : "translateY(0)",
-      }}
+      className="bg-white rounded-2xl mb-4 overflow-hidden"
+      style={{ border: "1.5px solid #e4ecff", boxShadow: "0 2px 12px rgba(26,0,217,0.06)" }}
     >
-      {/* Gradient left bar */}
-      <div
-        className="absolute left-0 top-0 bottom-0 w-1"
-        style={{ background: `linear-gradient(180deg, ${g[0]}, ${g[1]})` }}
-      />
+      {/* ── Main row ── */}
+      <div className="grid grid-cols-[260px_1fr_196px] divide-x divide-[#eef2ff]">
 
-      {/* ── Collapsed row ── */}
-      <div className="pl-5 pr-5 py-4 grid grid-cols-[auto_1fr_auto] gap-5 items-center">
+        {/* Col 1 — Team */}
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-black tracking-widest" style={{ color: "#5e9eff" }}>
+              {team.gen_id}
+            </span>
+            <RankBadge rank={rank} />
+          </div>
+          <p className="text-lg font-black text-gray-900 leading-tight mb-4">{team.team_name}</p>
 
-        {/* Left: rank + avatar */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0"
-            style={{
-              background: rs.bg,
-              color: rs.text,
-              ...(rs.glow ? { animation: "pulseGlow 2s ease-in-out infinite" } : {}),
-            }}
-          >
-            {rank}
-          </div>
-          <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black text-white shrink-0"
-            style={{ background: `linear-gradient(135deg, ${g[0]}, ${g[1]})` }}
-          >
-            {twoLetters(team.team_name)}
-          </div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold tracking-widest" style={{ color: "#5e9eff" }}>{team.gen_id}</p>
-            <p className="text-sm font-bold text-gray-900 leading-snug">{team.team_name}</p>
-            <p className="text-xs text-gray-400 truncate max-w-[120px]">{captain?.name}</p>
-          </div>
-        </div>
-
-        {/* Middle: use case */}
-        <div className="min-w-0 border-l border-[#eef2ff] pl-5">
-          <p className="text-sm font-bold text-gray-900 truncate">{team.approved_usecase}</p>
-          <p className="text-xs text-gray-400 italic mt-0.5 truncate">{team.usecase_desc}</p>
-          <div className="flex items-center gap-2 mt-2">
-            {team.members.slice(0, 4).map((m, i) => (
-              <div
-                key={i}
-                title={m.name}
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black text-white ring-1 ring-white"
-                style={{ background: `linear-gradient(135deg, ${GRADIENTS[i % GRADIENTS.length][0]}, ${GRADIENTS[i % GRADIENTS.length][1]})` }}
-              >
-                {memberTwoLetters(m.name)}
+          <p className="text-[9px] font-black uppercase tracking-widest mb-2" style={{ color: "#1a00d9", opacity: 0.4 }}>
+            Team
+          </p>
+          <div className="space-y-1.5 mb-5">
+            {team.members.map((m, i) => (
+              <div key={i} className="flex items-center gap-2 flex-wrap">
+                <span className={`text-sm leading-tight ${m.captain ? "font-bold text-gray-900" : "font-normal text-gray-500"}`}>
+                  {m.name}
+                </span>
+                {m.captain && (
+                  <span
+                    className="text-[8px] font-black px-1.5 py-0.5 rounded"
+                    style={{ background: "#fff0e6", color: "#fe6e06" }}
+                  >
+                    Captain
+                  </span>
+                )}
               </div>
             ))}
-            {team.members.length > 4 && (
-              <span className="text-[9px] text-gray-400 font-semibold">+{team.members.length - 4}</span>
-            )}
-            <span className="text-[9px] text-gray-300 ml-1">· {team.mentor}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: "#1a00d9", opacity: 0.4 }}>
+              Mentor
+            </span>
+            <span className="text-sm font-semibold text-gray-700">{team.mentor}</span>
           </div>
         </div>
 
-        {/* Right: score badges + chevron */}
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <PendingBadge label="SHORTLISTING" />
-          <PendingBadge label="FINALS" />
-          <div
-            className="w-6 h-6 rounded-full flex items-center justify-center mt-1 transition-all duration-300"
-            style={{
-              background: expanded ? "#1a00d9" : "#dbeaff",
-              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-          >
-            <svg viewBox="0 0 10 6" className="w-2.5 h-2.5" fill="none">
-              <path d="M1 1l4 4 4-4" stroke={expanded ? "#fff" : "#1a00d9"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+        {/* Col 2 — Use Case */}
+        <div className="p-6">
+          <p className="text-[9px] font-black uppercase tracking-widest mb-3" style={{ color: "#1a00d9", opacity: 0.4 }}>
+            Use Case
+          </p>
+          <p className="text-base font-black text-gray-900 leading-snug mb-3">{team.approved_usecase}</p>
+          <p className="text-sm text-gray-500 leading-relaxed">{team.usecase_desc}</p>
+        </div>
+
+        {/* Col 3 — Scores */}
+        <div className="p-6">
+          <p className="text-[9px] font-black uppercase tracking-widest mb-3" style={{ color: "#1a00d9", opacity: 0.4 }}>
+            Scores
+          </p>
+          <div className="space-y-3 mb-4">
+            <ScoreBox label="Shortlisting" total={2} />
+            <ScoreBox label="Finals" total={2} />
           </div>
+          <span
+            className="inline-block text-[9px] font-black px-2.5 py-1 rounded-full"
+            style={{ background: "#dbeaff", color: "#1a00d9" }}
+          >
+            {team.status}
+          </span>
         </div>
       </div>
 
-      {/* ── Expanded panel ── */}
-      {expanded && (
-        <div
-          className="animate-fade-slide-in"
-          style={{ borderTop: "1.5px solid #eef2ff", background: "linear-gradient(160deg,#f5f7ff 0%,#ffffff 50%)" }}
-          onClick={(e) => e.stopPropagation()}
+      {/* ── Timeline toggle button ── */}
+      <div className="px-6 pb-5 pt-1" style={{ borderTop: "1.5px solid #eef2ff", background: "#fff" }}>
+        <button
+          onClick={() => setTimelineOpen((v) => !v)}
+          className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all mt-4"
+          style={{
+            background: timelineOpen ? "#1a00d9" : "#dbeaff",
+            color: timelineOpen ? "#fff" : "#1a00d9",
+          }}
         >
-          <div className="pl-5 pr-5 pt-5 pb-2 grid grid-cols-[1fr_1.6fr_1fr] gap-6">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          {timelineOpen ? "Hide Status" : "View Status"}
+          <svg
+            viewBox="0 0 10 6"
+            className="w-2.5 h-2.5 transition-transform duration-300"
+            style={{ transform: timelineOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            fill="none"
+          >
+            <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
 
-            {/* Members */}
-            <div>
-              <p className="section-label mb-3">Team Members</p>
-              <div className="space-y-2">
-                {team.members.map((m, i) => (
-                  <div key={i} className="flex items-center gap-2.5">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black text-white shrink-0"
-                      style={{
-                        background: m.captain
-                          ? "#fe6e06"
-                          : `linear-gradient(135deg,${GRADIENTS[i % GRADIENTS.length][0]},${GRADIENTS[i % GRADIENTS.length][1]})`,
-                      }}
-                    >
-                      {memberTwoLetters(m.name)}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-gray-800 truncate">{m.name}</p>
-                      {m.captain && <span className="badge-captain">Captain</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="mt-4 flex items-center gap-2.5 p-3 rounded-xl"
-                style={{ background: "#dbeaff" }}
-              >
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-                  style={{ background: "#1a00d9", color: "#fff" }}
-                >
-                  M
-                </div>
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: "#5e9eff" }}>Mentor</p>
-                  <p className="text-sm font-bold" style={{ color: "#1a00d9" }}>{team.mentor}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Use case */}
-            <div>
-              <p className="section-label mb-3">Approved Use Case</p>
-              <div
-                className="rounded-2xl p-5 h-full relative overflow-hidden"
-                style={{ background: "linear-gradient(135deg,#1a00d9 0%,#3a2fe8 60%,#5e9eff 100%)" }}
-              >
-                {/* decorative circle */}
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full opacity-10" style={{ background: "#fff" }} />
-                <p className="text-base font-black text-white leading-snug">{team.approved_usecase}</p>
-                <div className="mt-3 h-px w-12" style={{ background: "#fe6e06" }} />
-                <p className="text-sm text-white/70 mt-3 leading-relaxed">{team.usecase_desc}</p>
-              </div>
-            </div>
-
-            {/* Scores */}
-            <div>
-              <p className="section-label mb-3">Scores</p>
-              <div className="space-y-3">
-                <ScoreBlock label="SHORTLISTING" />
-                <ScoreBlock label="FINALS" />
-              </div>
-            </div>
-          </div>
-
-          <div className="pl-5 pr-5 pb-5">
-            <StatusTimeline currentStatus={team.status} />
-          </div>
+      {/* ── Timeline (collapsible) ── */}
+      {timelineOpen && (
+        <div className="animate-fade-slide-in">
+          <StatusTimeline currentStatus={team.status} />
         </div>
       )}
     </div>
   );
 }
 
-function PendingBadge({ label }: { label: string }) {
+function RankBadge({ rank }: { rank: number }) {
+  const styles: Record<number, { bg: string; color: string }> = {
+    1: { bg: "#fe6e06", color: "#fff" },
+    2: { bg: "#1a00d9", color: "#fff" },
+    3: { bg: "#5e9eff", color: "#fff" },
+  };
+  const s = styles[rank] ?? { bg: "#eef2ff", color: "#1a00d9" };
   return (
-    <div
-      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-      style={{ background: "#dbeaff" }}
+    <span
+      className="text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+      style={{ background: s.bg, color: s.color }}
     >
-      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#5e9eff" }} />
-      <span className="text-[9px] font-black tracking-widest uppercase" style={{ color: "#1a00d9" }}>{label}</span>
-    </div>
+      {rank}
+    </span>
   );
 }
 
-function ScoreBlock({ label }: { label: string }) {
+function ScoreBox({ label, total }: { label: string; total: number }) {
   return (
-    <div className="rounded-xl overflow-hidden">
-      <div className="px-3 pt-3 pb-3" style={{ background: "#f5f7ff", border: "1.5px solid #dbeaff" }}>
-        <p className="text-[9px] font-black uppercase tracking-widest mb-2" style={{ color: "#1a00d9", opacity: 0.5 }}>{label}</p>
-        <div className="shimmer-bg rounded-lg h-8 mb-2" />
-        <div className="shimmer-bg rounded-md h-3 w-3/4" />
-      </div>
+    <div className="rounded-xl p-3" style={{ background: "#f5f7ff", border: "1.5px solid #e4ecff" }}>
+      <p className="text-[8px] font-black uppercase tracking-widest mb-1" style={{ color: "#1a00d9", opacity: 0.5 }}>
+        {label}
+      </p>
+      <p className="text-xl font-black leading-none" style={{ color: "#1a00d9" }}>
+        <span>—</span>
+        <span className="text-sm font-bold text-gray-300">/{total}</span>
+      </p>
+      <p className="text-[10px] text-gray-400 mt-0.5">Score —/100</p>
     </div>
   );
 }

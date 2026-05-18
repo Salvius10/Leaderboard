@@ -7,8 +7,8 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "GANIT Hackathon Leaderboard 2026",
-  description: "Public leaderboard for the GANIT Hackathon 2026 — track team progress, use cases, and scores.",
+  title: "GANIT Ideathon Leaderboard 2026",
+  description: "Public leaderboard for the GANIT Ideathon 2026 — track team progress, use cases, and scores.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

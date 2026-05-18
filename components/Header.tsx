@@ -25,7 +25,7 @@ export default function Header() {
               />
             )}
             <div className="h-5 w-px bg-gray-200" />
-            <span className="text-sm font-semibold text-gray-500 tracking-wide">Hackathon Leaderboard</span>
+            <span className="text-sm font-semibold text-gray-500 tracking-wide">Ideathon Leaderboard</span>
           </div>
           <span
             className="text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase"
@@ -64,7 +64,7 @@ export default function Header() {
                 Live
               </div>
               <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight">
-                2026 Hackathon
+                2026 Ideathon
               </h1>
               <p className="text-white/60 mt-2 text-sm sm:text-base max-w-md">
                 50 teams. One stage. Track every milestone — open to everyone.
