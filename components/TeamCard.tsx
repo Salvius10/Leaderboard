@@ -23,7 +23,6 @@ export default function TeamCard({ team, rank }: Props) {
             <span className="text-[10px] font-black tracking-widest" style={{ color: "#5e9eff" }}>
               {team.gen_id}
             </span>
-            <RankBadge rank={rank} />
           </div>
           <p className="text-lg font-black text-gray-900 leading-tight mb-4">{team.team_name}</p>
 
@@ -118,22 +117,6 @@ export default function TeamCard({ team, rank }: Props) {
   );
 }
 
-function RankBadge({ rank }: { rank: number }) {
-  const styles: Record<number, { bg: string; color: string }> = {
-    1: { bg: "#fe6e06", color: "#fff" },
-    2: { bg: "#1a00d9", color: "#fff" },
-    3: { bg: "#5e9eff", color: "#fff" },
-  };
-  const s = styles[rank] ?? { bg: "#eef2ff", color: "#1a00d9" };
-  return (
-    <span
-      className="text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-      style={{ background: s.bg, color: s.color }}
-    >
-      {rank}
-    </span>
-  );
-}
 
 function ScoreBox({ label, total }: { label: string; total: number }) {
   return (

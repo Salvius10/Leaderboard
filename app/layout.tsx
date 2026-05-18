@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "GANIT Ideathon Leaderboard 2026",
+  title: "GANIT GenAI Ideathon Leaderboard 2026",
   description: "Public leaderboard for the GANIT Ideathon 2026 — track team progress, use cases, and scores.",
 };
 
