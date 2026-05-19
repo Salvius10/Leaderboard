@@ -28,12 +28,15 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    if (window.location.search.indexOf("kiosk") === -1) return;
+    // 4K TV at 150% Windows scaling → screen.width ≈ 2560
+    // Laptop at 125% Windows scaling → screen.width ≈ 1536
+    // Threshold of 1920 cleanly separates the two.
+    if (window.screen.width < 1920) return;
 
     let direction = 1;
     let pauseCount = 0;
-    const PAUSE = 150; // ~2.5 s at 60 fps
-    const SPEED = 1;   // px per tick
+    const PAUSE = 150;
+    const SPEED = 1;
 
     const id = setInterval(() => {
       if (pauseCount > 0) { pauseCount--; return; }
