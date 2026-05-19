@@ -70,8 +70,8 @@ export default function TeamCard({ team, rank }: Props) {
             Scores
           </p>
           <div className="space-y-3 mb-4">
-            <ScoreBox label="Shortlisting" total={2} />
-            <ScoreBox label="Finals" total={2} />
+            <ScoreBox label="Shortlisting" />
+            <ScoreBox label="Finals" />
           </div>
           <span
             className="inline-block text-[9px] font-black px-2.5 py-1 rounded-full"
@@ -118,7 +118,7 @@ export default function TeamCard({ team, rank }: Props) {
 }
 
 
-function ScoreBox({ label, total }: { label: string; total: number }) {
+function ScoreBox({ label }: { label: string }) {
   return (
     <div className="rounded-xl p-3" style={{ background: "#f5f7ff", border: "1.5px solid #e4ecff" }}>
       <p className="text-[8px] font-black uppercase tracking-widest mb-1" style={{ color: "#1a00d9", opacity: 0.5 }}>
@@ -126,7 +126,6 @@ function ScoreBox({ label, total }: { label: string; total: number }) {
       </p>
       <p className="text-xl font-black leading-none" style={{ color: "#1a00d9" }}>
         <span>—</span>
-        <span className="text-sm font-bold text-gray-300">/{total}</span>
       </p>
       <p className="text-[10px] text-gray-400 mt-0.5">Score —/100</p>
     </div>
