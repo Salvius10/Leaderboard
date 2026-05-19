@@ -28,10 +28,8 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // screen.width × devicePixelRatio = physical pixel count of the screen.
-    // A 4K TV is always ≥ 3840 physical px regardless of Windows scaling.
-    // No laptop has a native resolution above 3000 px, so this is a clean gate.
-    if (window.screen.width * window.devicePixelRatio < 3000) return;
+
+    if (window.location.search.indexOf("kiosk") === -1) return;
 
     let direction = 1;
     let pauseCount = 0;
