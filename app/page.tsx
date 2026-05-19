@@ -28,10 +28,9 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // Use screen.width (CSS pixels after OS scaling) to detect TV-sized screens.
-    // A laptop at 125 % scaling reports ~1536 px; a TV at 1080p reports 1920 px
-    // regardless of DPR, so screen.width alone is the reliable gate.
-    if (window.screen.width < 1920) return;
+    // Only scroll when ?kiosk is in the URL — open the site as
+    // "https://your-site.com/?kiosk" on the TV to enable auto-scroll.
+    if (!new URLSearchParams(window.location.search).has("kiosk")) return;
 
     let animationId: number;
     let direction = 1; // 1 = down, -1 = up
