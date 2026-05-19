@@ -28,10 +28,10 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // TV check: screen must be ≥ 1920 px wide AND devicePixelRatio must be 1.
-    // Laptops scaled at 125 %/150 % have DPR > 1 even when their physical
-    // resolution is 1920 px, so the DPR guard excludes them correctly.
-    if (window.screen.width < 1920 || window.devicePixelRatio > 1) return;
+    // Use screen.width (CSS pixels after OS scaling) to detect TV-sized screens.
+    // A laptop at 125 % scaling reports ~1536 px; a TV at 1080p reports 1920 px
+    // regardless of DPR, so screen.width alone is the reliable gate.
+    if (window.screen.width < 1920) return;
 
     let animationId: number;
     let direction = 1; // 1 = down, -1 = up
