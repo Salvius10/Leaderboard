@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TEAMS, STATUS_ORDER } from "@/lib/data";
 import TeamCard from "@/components/TeamCard";
 
@@ -26,6 +26,35 @@ export default function LeaderboardPage() {
   }, [search, mentor, status]);
 
   const hasFilters = search || mentor || status;
+
+  useEffect(() => {
+    let animationId: number;
+    let direction = 1; // 1 = down, -1 = up
+    let pauseFrames = 0;
+    const PAUSE = 150; // ~2.5 s pause at each end
+    const SPEED = 1;   // px per frame
+
+    function step() {
+      if (pauseFrames > 0) {
+        pauseFrames--;
+        animationId = requestAnimationFrame(step);
+        return;
+      }
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (direction === 1 && window.scrollY >= maxScroll) {
+        direction = -1;
+        pauseFrames = PAUSE;
+      } else if (direction === -1 && window.scrollY <= 0) {
+        direction = 1;
+        pauseFrames = PAUSE;
+      }
+      window.scrollBy(0, direction * SPEED);
+      animationId = requestAnimationFrame(step);
+    }
+
+    animationId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationId);
+  }, []);
 
   return (
     <div>
