@@ -7,7 +7,7 @@ export default function Footer() {
 
   return (
     <footer style={{ background: "#1a00d9" }} className="mt-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           {logoFailed ? (
             <span className="text-lg font-black text-white">GANIT</span>

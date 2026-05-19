@@ -12,23 +12,23 @@ export default function Header() {
     <header>
       {/* ── White top nav ── */}
       <div className="bg-white border-b border-[#dbeaff]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             {logoFailed ? (
-              <span className="text-xl font-black text-[#1a00d9]">GANIT</span>
+              <span className="text-xl font-black text-[#1a00d9] flex-shrink-0">GANIT</span>
             ) : (
               <img
                 src="https://www.ganitinc.com/images/ganit-blue-logo.svg"
                 alt="GANIT"
-                className="h-8 w-auto"
+                className="h-8 w-auto flex-shrink-0"
                 onError={() => setLogoFailed(true)}
               />
             )}
-            <div className="h-5 w-px bg-gray-200" />
-            <span className="text-sm font-semibold text-gray-500 tracking-wide">GenAI Ideathon Leaderboard</span>
+            <div className="h-5 w-px bg-gray-200 flex-shrink-0" />
+            <span className="text-sm font-semibold text-gray-500 tracking-wide truncate">GenAI Ideathon Leaderboard</span>
           </div>
           <span
-            className="text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase"
+            className="flex-shrink-0 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase"
             style={{ background: "#dbeaff", color: "#1a00d9" }}
           >
             Public View

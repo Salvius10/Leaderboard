@@ -15,7 +15,7 @@ export default function TeamCard({ team, rank }: Props) {
       style={{ border: "1.5px solid #e4ecff", boxShadow: "0 2px 12px rgba(26,0,217,0.06)" }}
     >
       {/* ── Main row ── */}
-      <div className="grid grid-cols-[16rem_1fr_12rem] divide-x divide-[#eef2ff]">
+      <div className="grid grid-cols-1 md:grid-cols-[16rem_1fr_12rem] divide-y md:divide-y-0 md:divide-x divide-[#eef2ff]">
 
         {/* Col 1 — Team */}
         <div className="p-6">

@@ -28,8 +28,9 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // Only run on TV-sized screens (≥ 1920 px wide)
-    if (window.innerWidth < 1920) return;
+    // Only run on TV-sized screens — use physical pixels so Windows display
+    // scaling (125 %, 150 %) doesn't fool the check
+    if (window.screen.width * window.devicePixelRatio < 1920) return;
 
     let animationId: number;
     let direction = 1; // 1 = down, -1 = up
@@ -124,9 +125,9 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* ── Table header ── */}
+      {/* ── Table header — hidden on mobile ── */}
       <div
-        className="grid grid-cols-[16rem_1fr_12rem] gap-0 pl-6 pr-5 py-3 mb-3 rounded-xl"
+        className="hidden md:grid grid-cols-[16rem_1fr_12rem] gap-0 pl-6 pr-5 py-3 mb-3 rounded-xl"
         style={{ background: "linear-gradient(90deg,#1a00d9 0%,#3a2fe8 50%,#5e9eff 100%)" }}
       >
         <p className="text-[10px] font-black uppercase tracking-widest text-white/70">Team</p>
