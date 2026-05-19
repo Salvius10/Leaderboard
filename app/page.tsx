@@ -28,9 +28,10 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // Only run on TV-sized screens — use physical pixels so Windows display
-    // scaling (125 %, 150 %) doesn't fool the check
-    if (window.screen.width * window.devicePixelRatio < 1920) return;
+    // TV check: screen must be ≥ 1920 px wide AND devicePixelRatio must be 1.
+    // Laptops scaled at 125 %/150 % have DPR > 1 even when their physical
+    // resolution is 1920 px, so the DPR guard excludes them correctly.
+    if (window.screen.width < 1920 || window.devicePixelRatio > 1) return;
 
     let animationId: number;
     let direction = 1; // 1 = down, -1 = up
