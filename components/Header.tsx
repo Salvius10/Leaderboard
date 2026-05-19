@@ -67,7 +67,7 @@ export default function Header() {
                 2026 GenAI Ideathon
               </h1>
               <p className="text-white/60 mt-2 text-sm sm:text-base max-w-md">
-                50 teams. One stage. Track every milestone — open to everyone.
+                 One stage. Track every milestone — open to everyone.
               </p>
             </div>
 
