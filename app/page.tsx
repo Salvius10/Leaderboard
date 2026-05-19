@@ -126,7 +126,7 @@ export default function LeaderboardPage() {
 
       {/* ── Table header ── */}
       <div
-        className="grid grid-cols-[260px_1fr_196px] gap-0 pl-6 pr-5 py-3 mb-3 rounded-xl"
+        className="grid grid-cols-[16rem_1fr_12rem] gap-0 pl-6 pr-5 py-3 mb-3 rounded-xl"
         style={{ background: "linear-gradient(90deg,#1a00d9 0%,#3a2fe8 50%,#5e9eff 100%)" }}
       >
         <p className="text-[10px] font-black uppercase tracking-widest text-white/70">Team</p>
