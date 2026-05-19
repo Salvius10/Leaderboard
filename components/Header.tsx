@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { TEAMS } from "@/lib/data";
-
-const MENTOR_COUNT = new Set(TEAMS.map((t) => t.mentor)).size;
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Header() {
-  const [logoFailed, setLogoFailed] = useState(false);
+  const [logoFailed, setLogoFailed]   = useState(false);
+  const [teamCount, setTeamCount]     = useState<number>(0);
+  const [mentorCount, setMentorCount] = useState<number>(0);
+
+  useEffect(() => {
+    supabase.from("teams").select("mentor").then(({ data }) => {
+      if (!data) return;
+      setTeamCount(data.length);
+      setMentorCount(new Set(data.map((t: { mentor: string }) => t.mentor)).size);
+    });
+  }, []);
 
   return (
     <header>
@@ -67,14 +75,14 @@ export default function Header() {
                 2026 GenAI Ideathon
               </h1>
               <p className="text-white/60 mt-2 text-sm sm:text-base max-w-md">
-                 One stage. Track every milestone — open to everyone.
+                One stage. Track every milestone — open to everyone.
               </p>
             </div>
 
             {/* Stats cards */}
             <div className="flex flex-wrap gap-3 shrink-0">
-              <StatCard value={TEAMS.length} label="Teams" icon="🏆" />
-              <StatCard value={MENTOR_COUNT} label="Mentors" icon="🎓" />
+              <StatCard value={teamCount} label="Teams" icon="🏆" />
+              <StatCard value={mentorCount} label="Mentors" icon="🎓" />
               <StatCard value={6} label="Milestones" icon="📍" />
               <StatCard value="12 Jun" label="Finals" icon="🚀" accent />
             </div>

@@ -1,34 +1,30 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { TEAMS, STATUS_ORDER } from "@/lib/data";
+import { STATUS_ORDER, Team } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 import TeamCard from "@/components/TeamCard";
 
-const MENTORS = Array.from(new Set(TEAMS.map((t) => t.mentor))).sort();
-
 export default function LeaderboardPage() {
+  const [teams, setTeams]     = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch]   = useState("");
   const [mentor, setMentor]   = useState("");
   const [status, setStatus]   = useState("");
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return TEAMS.filter((t) => {
-      const matchSearch =
-        !q ||
-        t.team_name.toLowerCase().includes(q) ||
-        t.gen_id.toLowerCase().includes(q) ||
-        t.members.some((m) => m.name.toLowerCase().includes(q)) ||
-        t.approved_usecase.toLowerCase().includes(q) ||
-        t.mentor.toLowerCase().includes(q);
-      return matchSearch && (!mentor || t.mentor === mentor) && (!status || t.status === status);
-    });
-  }, [search, mentor, status]);
-
-  const hasFilters = search || mentor || status;
-
   useEffect(() => {
+    supabase
+      .from("teams")
+      .select("*")
+      .order("gen_id")
+      .then(({ data, error }) => {
+        if (!error && data) setTeams(data as Team[]);
+        setLoading(false);
+      });
+  }, []);
 
+  // Auto-scroll (kiosk / TV mode)
+  useEffect(() => {
     if (window.location.search.indexOf("kiosk") === -1) return;
 
     let direction = 1;
@@ -48,6 +44,37 @@ export default function LeaderboardPage() {
     return () => clearInterval(id);
   }, []);
 
+  const mentors = useMemo(
+    () => Array.from(new Set(teams.map((t) => t.mentor))).sort(),
+    [teams]
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return teams.filter((t) => {
+      const matchSearch =
+        !q ||
+        t.team_name.toLowerCase().includes(q) ||
+        t.gen_id.toLowerCase().includes(q) ||
+        t.members.some((m) => m.name.toLowerCase().includes(q)) ||
+        t.approved_usecase.toLowerCase().includes(q) ||
+        t.mentor.toLowerCase().includes(q);
+      return matchSearch && (!mentor || t.mentor === mentor) && (!status || t.status === status);
+    });
+  }, [teams, search, mentor, status]);
+
+  const hasFilters = search || mentor || status;
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-48 rounded-2xl shimmer-bg" />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* ── Filter bar ── */}
@@ -55,7 +82,6 @@ export default function LeaderboardPage() {
         className="flex flex-wrap items-center gap-3 mb-6 p-4 rounded-2xl bg-white"
         style={{ border: "1.5px solid #dbeaff", boxShadow: "0 4px 24px rgba(26,0,217,0.06)" }}
       >
-        {/* Search */}
         <div className="relative flex-1 min-w-56">
           <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#5e9eff" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
@@ -72,7 +98,7 @@ export default function LeaderboardPage() {
         <div className="relative">
           <select className="filter-select pr-8" value={mentor} onChange={(e) => setMentor(e.target.value)}>
             <option value="">All mentors</option>
-            {MENTORS.map((m) => <option key={m} value={m}>{m}</option>)}
+            {mentors.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
           <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "#5e9eff" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -107,7 +133,7 @@ export default function LeaderboardPage() {
             className="text-xs font-black px-3 py-1.5 rounded-full"
             style={{ background: hasFilters ? "#1a00d9" : "#dbeaff", color: hasFilters ? "#fff" : "#1a00d9" }}
           >
-            {filtered.length} / {TEAMS.length}
+            {filtered.length} / {teams.length}
           </span>
           <span className="text-xs text-gray-400 font-medium">teams</span>
         </div>
