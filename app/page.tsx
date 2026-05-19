@@ -28,6 +28,9 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
+    // Only run on TV-sized screens (≥ 1920 px wide)
+    if (window.innerWidth < 1920) return;
+
     let animationId: number;
     let direction = 1; // 1 = down, -1 = up
     let pauseFrames = 0;

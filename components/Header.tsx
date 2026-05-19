@@ -12,7 +12,7 @@ export default function Header() {
     <header>
       {/* ── White top nav ── */}
       <div className="bg-white border-b border-[#dbeaff]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {logoFailed ? (
               <span className="text-xl font-black text-[#1a00d9]">GANIT</span>
@@ -53,7 +53,7 @@ export default function Header() {
           }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
             <div>
               <div

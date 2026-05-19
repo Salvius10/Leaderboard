@@ -4,6 +4,10 @@
 
 * { box-sizing: border-box; }
 
+/* Scale up base font for laptop and TV screens */
+@media (min-width: 1280px) { html { font-size: 120%; } }
+@media (min-width: 1920px) { html { font-size: 150%; } }
+
 body {
   background-color: #eef2ff;
   color: #111827;
