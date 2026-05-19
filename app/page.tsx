@@ -28,36 +28,23 @@ export default function LeaderboardPage() {
   const hasFilters = search || mentor || status;
 
   useEffect(() => {
-    // Only scroll when ?kiosk is in the URL — open the site as
-    // "https://your-site.com/?kiosk" on the TV to enable auto-scroll.
-    if (!new URLSearchParams(window.location.search).has("kiosk")) return;
+    if (window.location.search.indexOf("kiosk") === -1) return;
 
-    let animationId: number;
-    let direction = 1; // 1 = down, -1 = up
-    let pauseFrames = 0;
-    const PAUSE = 150; // ~2.5 s pause at each end
-    const SPEED = 1;   // px per frame
+    let direction = 1;
+    let pauseCount = 0;
+    const PAUSE = 150; // ~2.5 s at 60 fps
+    const SPEED = 1;   // px per tick
 
-    function step() {
-      if (pauseFrames > 0) {
-        pauseFrames--;
-        animationId = requestAnimationFrame(step);
-        return;
-      }
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (direction === 1 && window.scrollY >= maxScroll) {
-        direction = -1;
-        pauseFrames = PAUSE;
-      } else if (direction === -1 && window.scrollY <= 0) {
-        direction = 1;
-        pauseFrames = PAUSE;
-      }
-      window.scrollBy(0, direction * SPEED);
-      animationId = requestAnimationFrame(step);
-    }
+    const id = setInterval(() => {
+      if (pauseCount > 0) { pauseCount--; return; }
+      const el = document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      if (direction === 1 && el.scrollTop >= max) { direction = -1; pauseCount = PAUSE; }
+      else if (direction === -1 && el.scrollTop <= 0) { direction = 1; pauseCount = PAUSE; }
+      el.scrollTop += direction * SPEED;
+    }, 16);
 
-    animationId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationId);
+    return () => clearInterval(id);
   }, []);
 
   return (
