@@ -85,6 +85,7 @@ export const TEAMS: Team[] = [
       { name: "Fathima Devasahayam", captain: false },
       { name: "Kishor Tummod", captain: false },
       { name: "Digvijay Yadav", captain: false },
+      { name: "Sireesha S", captain: false },
     ],
     approved_usecase: "Omnichannel Customer Service AI",
     usecase_desc:
