@@ -29,6 +29,8 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
 
+    if (window.location.search.indexOf("kiosk") === -1) return;
+
     let direction = 1;
     let pauseCount = 0;
     const PAUSE = 150;
