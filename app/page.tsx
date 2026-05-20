@@ -31,51 +31,60 @@ export default function LeaderboardPage() {
     if (loading) return;
     if (!window.location.search.includes("kiosk")) return;
 
-    let direction = 1;
-    let pauseFrames = 0;
-    const PAUSE_FRAMES = 180; // ~3 s at 60 fps
-    const SPEED = 1;          // px per frame
-    let rafId: number;
+    const html = document.documentElement;
+    const body = document.body;
 
-    // Allow fonts, images, and layout to fully settle before measuring
-    const startDelay = setTimeout(() => {
-      function tick() {
-        if (pauseFrames > 0) {
-          pauseFrames--;
-          rafId = requestAnimationFrame(tick);
-          return;
-        }
+    // Imperatively force scrollability — TV WebViews (Tizen, WebOS, Android TV)
+    // often ignore CSS overflow at runtime and must be set via JS
+    html.style.overflowY = "scroll";
 
-        // window.scrollY is universally reliable; pageYOffset is the legacy alias
-        const scrollY = window.scrollY ?? window.pageYOffset ?? 0;
-
-        // Take the larger of body/html scrollHeight — TV WebViews disagree on which is authoritative
-        const scrollHeight = Math.max(
-          document.body.scrollHeight,
-          document.documentElement.scrollHeight
-        );
-        const max = scrollHeight - window.innerHeight;
-
-        // Nothing to scroll (content fits the screen)
-        if (max <= 0) { rafId = requestAnimationFrame(tick); return; }
-
-        // ±2 px tolerance handles sub-pixel rounding on scaled TV displays
-        if (direction === 1 && scrollY >= max - 2)  { direction = -1; pauseFrames = PAUSE_FRAMES; }
-        else if (direction === -1 && scrollY <= 2)  { direction =  1; pauseFrames = PAUSE_FRAMES; }
-
-        // scrollBy is the cross-browser primitive; avoids directly mutating scrollTop
-        window.scrollBy(0, direction * SPEED);
-        rafId = requestAnimationFrame(tick);
+    // Detect which element actually accepts scrollTop changes.
+    // html and body differ across TV engines — probe both to find the real container.
+    let scrollEl: HTMLElement = html;
+    const prevHtml = html.scrollTop;
+    html.scrollTop = prevHtml + 1;
+    if (html.scrollTop === prevHtml + 1) {
+      html.scrollTop = prevHtml; // html responds — use it
+    } else {
+      const prevBody = body.scrollTop;
+      body.scrollTop = prevBody + 1;
+      if (body.scrollTop === prevBody + 1) {
+        body.scrollTop = prevBody; // body responds — use it
+        scrollEl = body;
       }
+      // else: page not yet scrollable (content too short); default stays html
+    }
 
-      rafId = requestAnimationFrame(tick);
-    }, 800); // 800 ms lets the first paint and Supabase data settle
+    let direction  = 1;
+    let pauseUntil = Date.now() + 1500; // initial settle delay
+    const PAUSE_MS = 3000;
+    const SPEED    = 2;   // px per tick — higher than 1 to be visible on large TV screens
+    const TICK_MS  = 16;  // ~60 fps
+
+    const id = setInterval(() => {
+      if (Date.now() < pauseUntil) return;
+
+      const y   = scrollEl.scrollTop;
+      const max = Math.max(body.scrollHeight, html.scrollHeight) - window.innerHeight;
+
+      if (max <= 0) return; // content fits screen — nothing to do
+
+      if (direction === 1 && y >= max - 2) {
+        direction  = -1;
+        pauseUntil = Date.now() + PAUSE_MS;
+      } else if (direction === -1 && y <= 2) {
+        direction  = 1;
+        pauseUntil = Date.now() + PAUSE_MS;
+      } else {
+        scrollEl.scrollTop += direction * SPEED;
+      }
+    }, TICK_MS);
 
     return () => {
-      clearTimeout(startDelay);
-      cancelAnimationFrame(rafId);
+      clearInterval(id);
+      html.style.overflowY = "";
     };
-  }, [loading]); // restart when data finishes loading so scrollHeight is accurate
+  }, [loading]);
 
   const mentors = useMemo(
     () => Array.from(new Set(teams.map((t) => t.mentor.trim()))).sort(),

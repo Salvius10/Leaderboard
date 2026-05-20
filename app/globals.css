@@ -5,7 +5,7 @@
 * { box-sizing: border-box; }
 
 /* Explicitly allow page-level scrolling — some TV WebViews default to hidden */
-html { overflow-y: auto; }
+html { overflow-y: scroll; }
 body { overflow-x: hidden; }
 
 /* Scale up base font for laptop and TV screens */
