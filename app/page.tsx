@@ -78,7 +78,7 @@ export default function LeaderboardPage() {
   }, [loading]); // restart when data finishes loading so scrollHeight is accurate
 
   const mentors = useMemo(
-    () => Array.from(new Set(teams.map((t) => t.mentor))).sort(),
+    () => Array.from(new Set(teams.map((t) => t.mentor.trim()))).sort(),
     [teams]
   );
 
@@ -149,7 +149,7 @@ export default function LeaderboardPage() {
 
         <div className="relative">
           <select className="filter-select pr-8" value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">All statuses</option>
+            <option value="">All status</option>
             {STATUS_ORDER.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "#5e9eff" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
