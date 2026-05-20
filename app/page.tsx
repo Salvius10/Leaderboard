@@ -101,7 +101,7 @@ export default function LeaderboardPage() {
         t.members.some((m) => m.name.toLowerCase().includes(q)) ||
         t.approved_usecase.toLowerCase().includes(q) ||
         t.mentor.toLowerCase().includes(q);
-      return matchSearch && (!mentor || t.mentor === mentor) && (!status || t.status === status);
+      return matchSearch && (!mentor || t.mentor.trim() === mentor) && (!status || t.status.trim() === status);
     });
   }, [teams, search, mentor, status]);
 
