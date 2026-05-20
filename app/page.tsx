@@ -4,13 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { STATUS_ORDER, Team } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 import TeamCard from "@/components/TeamCard";
+import { downloadExcel } from "@/lib/downloadExcel";
+import { ALL_EMPLOYEES } from "@/lib/employees";
 
 export default function LeaderboardPage() {
-  const [teams, setTeams]     = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState("");
-  const [mentor, setMentor]   = useState("");
-  const [status, setStatus]   = useState("");
+  const [teams, setTeams]         = useState<Team[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [search, setSearch]       = useState("");
+  const [mentor, setMentor]       = useState("");
+  const [status, setStatus]       = useState("");
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     supabase
@@ -95,6 +98,15 @@ export default function LeaderboardPage() {
 
   const hasFilters = search || mentor || status;
 
+  const unregistered = useMemo(() => {
+    const registered = new Set(
+      teams.flatMap((t) => t.members.map((m) => m.name.toLowerCase().trim()))
+    );
+    return ALL_EMPLOYEES.filter((name) => !registered.has(name.toLowerCase().trim()));
+  }, [teams]);
+
+  const [showUnregistered, setShowUnregistered] = useState(false);
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -166,8 +178,93 @@ export default function LeaderboardPage() {
             {filtered.length} / {teams.length}
           </span>
           <span className="text-xs text-gray-400 font-medium">teams</span>
+
+          {/* Excel download button — re-enable when needed */}
+          {false && (
+          <button
+            onClick={async () => {
+              setExporting(true);
+              try { await downloadExcel(teams); }
+              finally { setExporting(false); }
+            }}
+            disabled={exporting || teams.length === 0}
+            className="flex items-center gap-1.5 text-xs font-bold px-3 py-2.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: "#1a00d9", color: "#fff", boxShadow: "0 4px 16px rgba(26,0,217,0.25)" }}
+          >
+            {exporting ? (
+              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 3v12" />
+              </svg>
+            )}
+            {exporting ? "Exporting…" : "Excel Report"}
+          </button>
+          )}
         </div>
       </div>
+
+      {/* ── Not Yet Registered ── */}
+      {!loading && unregistered.length > 0 && (
+        <div
+          className="mb-6 rounded-2xl bg-white overflow-hidden"
+          style={{ border: "1.5px solid #ffe4cc", boxShadow: "0 4px 24px rgba(254,110,6,0.08)" }}
+        >
+          <button
+            onClick={() => setShowUnregistered((v) => !v)}
+            className="w-full flex items-center justify-between px-5 py-4"
+          >
+            <div className="flex items-center gap-3">
+              <span
+                className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(254,110,6,0.12)" }}
+              >
+                <svg className="w-4 h-4" style={{ color: "#fe6e06" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              </span>
+              <div className="text-left">
+                <p className="text-sm font-black" style={{ color: "#fe6e06" }}>Not Yet Registered</p>
+                <p className="text-xs text-gray-400 mt-0.5">{unregistered.length} employee{unregistered.length !== 1 ? "s" : ""} yet to join a team</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="text-xs font-black px-2.5 py-1 rounded-full"
+                style={{ background: "#fff0e6", color: "#fe6e06" }}
+              >
+                {unregistered.length}
+              </span>
+              <svg
+                className="w-4 h-4 transition-transform duration-300"
+                style={{ color: "#fe6e06", transform: showUnregistered ? "rotate(180deg)" : "rotate(0deg)" }}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          {showUnregistered && (
+            <div className="px-5 pb-5 pt-1" style={{ borderTop: "1.5px solid #ffe4cc" }}>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {unregistered.map((name) => (
+                  <span
+                    key={name}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-xl"
+                    style={{ background: "#fff7f0", color: "#c2410c", border: "1px solid #ffe4cc" }}
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Table header — hidden on mobile ── */}
       <div
