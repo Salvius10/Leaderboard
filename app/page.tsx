@@ -25,24 +25,54 @@ export default function LeaderboardPage() {
 
   // Auto-scroll (kiosk / TV mode)
   useEffect(() => {
-    if (window.location.search.indexOf("kiosk") === -1) return;
+    if (loading) return;
+    if (!window.location.search.includes("kiosk")) return;
 
     let direction = 1;
-    let pauseCount = 0;
-    const PAUSE = 150;
-    const SPEED = 1;
+    let pauseFrames = 0;
+    const PAUSE_FRAMES = 180; // ~3 s at 60 fps
+    const SPEED = 1;          // px per frame
+    let rafId: number;
 
-    const id = setInterval(() => {
-      if (pauseCount > 0) { pauseCount--; return; }
-      const el = document.documentElement;
-      const max = el.scrollHeight - el.clientHeight;
-      if (direction === 1 && el.scrollTop >= max) { direction = -1; pauseCount = PAUSE; }
-      else if (direction === -1 && el.scrollTop <= 0) { direction = 1; pauseCount = PAUSE; }
-      el.scrollTop += direction * SPEED;
-    }, 16);
+    // Allow fonts, images, and layout to fully settle before measuring
+    const startDelay = setTimeout(() => {
+      function tick() {
+        if (pauseFrames > 0) {
+          pauseFrames--;
+          rafId = requestAnimationFrame(tick);
+          return;
+        }
 
-    return () => clearInterval(id);
-  }, []);
+        // window.scrollY is universally reliable; pageYOffset is the legacy alias
+        const scrollY = window.scrollY ?? window.pageYOffset ?? 0;
+
+        // Take the larger of body/html scrollHeight — TV WebViews disagree on which is authoritative
+        const scrollHeight = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+        const max = scrollHeight - window.innerHeight;
+
+        // Nothing to scroll (content fits the screen)
+        if (max <= 0) { rafId = requestAnimationFrame(tick); return; }
+
+        // ±2 px tolerance handles sub-pixel rounding on scaled TV displays
+        if (direction === 1 && scrollY >= max - 2)  { direction = -1; pauseFrames = PAUSE_FRAMES; }
+        else if (direction === -1 && scrollY <= 2)  { direction =  1; pauseFrames = PAUSE_FRAMES; }
+
+        // scrollBy is the cross-browser primitive; avoids directly mutating scrollTop
+        window.scrollBy(0, direction * SPEED);
+        rafId = requestAnimationFrame(tick);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }, 800); // 800 ms lets the first paint and Supabase data settle
+
+    return () => {
+      clearTimeout(startDelay);
+      cancelAnimationFrame(rafId);
+    };
+  }, [loading]); // restart when data finishes loading so scrollHeight is accurate
 
   const mentors = useMemo(
     () => Array.from(new Set(teams.map((t) => t.mentor))).sort(),
