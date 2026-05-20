@@ -75,7 +75,6 @@ export const ALL_EMPLOYEES: string[] = [
   "Shaik Sameer Babu",
   "Asish Venkata Korukonda Jaya Chand Sri Korukonda",
   "Jones Augustine G",
-  "Karthiha Muthuraj",
   "S Sivassri",
   "Omkar Vaijanath More",
 ];
