@@ -5,14 +5,13 @@ import { supabase } from "@/lib/supabase";
 
 export default function Header() {
   const [logoFailed, setLogoFailed]   = useState(false);
-  const [teamCount, setTeamCount]     = useState<number>(0);
-  const [mentorCount, setMentorCount] = useState<number>(0);
+  const [teamCount, setTeamCount] = useState<number>(0);
+  const mentorCount = 10;
 
   useEffect(() => {
     supabase.from("teams").select("mentor").then(({ data }) => {
       if (!data) return;
       setTeamCount(data.length);
-      setMentorCount(new Set(data.map((t: { mentor: string }) => t.mentor)).size);
     });
   }, []);
 
