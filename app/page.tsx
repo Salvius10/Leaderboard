@@ -57,7 +57,7 @@ export default function LeaderboardPage() {
     let direction  = 1;
     let pauseUntil = Date.now() + 1500; // initial settle delay
     const PAUSE_MS = 3000;
-    const SPEED    = 2;   // px per tick — higher than 1 to be visible on large TV screens
+    const SPEED    = 1;   // px per tick — higher than 1 to be visible on large TV screens
     const TICK_MS  = 16;  // ~60 fps
 
     const id = setInterval(() => {
