@@ -27,8 +27,21 @@ export default function StatusTimeline({ currentStatus }: Props) {
 
         <div className="relative flex justify-between">
           {MILESTONE_DATES.map((m, i) => {
-            const done   = i < currentIdx;
-            const active = i === currentIdx;
+            // Registration (i=0) is always done — all teams have registered.
+            // Use Case Submission (i=1) is orange/pending if team is still at Registration,
+            // blue tick if team has submitted (status = Use Case Submission or beyond).
+            let done: boolean;
+            let active: boolean;
+            if (i === 0) {
+              done = true;
+              active = false;
+            } else if (i === 1) {
+              done = currentIdx >= 1;
+              active = currentIdx === 0;
+            } else {
+              done = i < currentIdx;
+              active = i === currentIdx;
+            }
 
             return (
               <div key={m.label} className="flex flex-col items-center gap-2" style={{ flex: 1 }}>
