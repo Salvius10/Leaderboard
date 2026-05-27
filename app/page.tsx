@@ -18,7 +18,7 @@ export default function LeaderboardPage() {
     supabase
       .from("teams")
       .select("*")
-      .order("gen_id")
+      .order("score", { ascending: false, nullsFirst: false })
       .then(({ data, error }) => {
         if (!error && data) setTeams(data as Team[]);
         setLoading(false);

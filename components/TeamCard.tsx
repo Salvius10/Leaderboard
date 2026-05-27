@@ -69,16 +69,9 @@ export default function TeamCard({ team, rank }: Props) {
           <p className="text-[9px] font-black uppercase tracking-widest mb-3" style={{ color: "#1a00d9", opacity: 0.4 }}>
             Scores
           </p>
-          <div className="space-y-3 mb-4">
-            <ScoreBox label="Shortlisting" />
-            <ScoreBox label="Finals" />
+          <div className="mb-4">
+            <ScoreBox score={team.score} />
           </div>
-          <span
-            className="inline-block text-[9px] font-black px-2.5 py-1 rounded-full"
-            style={{ background: "#dbeaff", color: "#1a00d9" }}
-          >
-            {team.status}
-          </span>
         </div>
       </div>
 
@@ -118,16 +111,17 @@ export default function TeamCard({ team, rank }: Props) {
 }
 
 
-function ScoreBox({ label }: { label: string }) {
+function ScoreBox({ score }: { score: number | null }) {
+  const hasScore = score !== null && score !== undefined;
   return (
-    <div className="rounded-xl p-3" style={{ background: "#f5f7ff", border: "1.5px solid #e4ecff" }}>
-      <p className="text-[8px] font-black uppercase tracking-widest mb-1" style={{ color: "#1a00d9", opacity: 0.5 }}>
-        {label}
+    <div className="rounded-xl p-4" style={{ background: "#f5f7ff", border: "1.5px solid #e4ecff" }}>
+      <p className="text-[8px] font-black uppercase tracking-widest mb-2" style={{ color: "#1a00d9", opacity: 0.5 }}>
+        Score
       </p>
-      <p className="text-xl font-black leading-none" style={{ color: "#1a00d9" }}>
-        <span>—</span>
+      <p className="text-3xl font-black leading-none" style={{ color: hasScore ? "#1a00d9" : "#9ca3af" }}>
+        {hasScore ? score : "—"}
+        <span className="text-base font-semibold text-gray-400 ml-1">/100</span>
       </p>
-      <p className="text-[10px] text-gray-400 mt-0.5">Score —/100</p>
     </div>
   );
 }

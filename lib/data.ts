@@ -11,6 +11,7 @@ export type Team = {
   usecase_desc: string;
   mentor: string;
   status: string;
+  score: number | null;
 };
 
 export const MILESTONE_DATES = [
