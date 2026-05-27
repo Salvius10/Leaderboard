@@ -111,7 +111,7 @@ export default function TeamCard({ team, rank }: Props) {
 }
 
 
-function ScoreBox({ score }: { score: number | null }) {
+function ScoreBox({ score }: { score: number | null | undefined }) {
   const hasScore = score !== null && score !== undefined;
   return (
     <div className="rounded-xl p-4" style={{ background: "#f5f7ff", border: "1.5px solid #e4ecff" }}>
