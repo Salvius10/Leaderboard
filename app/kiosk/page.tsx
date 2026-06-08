@@ -24,36 +24,19 @@ export default function KioskPage() {
   useEffect(() => {
     if (loading) return;
 
-    const html = document.documentElement;
-    const body = document.body;
-
-    html.style.overflowY = "scroll";
-
-    let scrollEl: HTMLElement = html;
-    const prevHtml = html.scrollTop;
-    html.scrollTop = prevHtml + 1;
-    if (html.scrollTop === prevHtml + 1) {
-      html.scrollTop = prevHtml;
-    } else {
-      const prevBody = body.scrollTop;
-      body.scrollTop = prevBody + 1;
-      if (body.scrollTop === prevBody + 1) {
-        body.scrollTop = prevBody;
-        scrollEl = body;
-      }
-    }
+    document.documentElement.style.overflowY = "scroll";
 
     let direction = 1;
     let pauseUntil = Date.now() + 1500;
     const PAUSE_MS = 3000;
-    const SPEED = 0.5;
+    const SPEED = 1.5;
     const TICK_MS = 16;
 
     const id = setInterval(() => {
       if (Date.now() < pauseUntil) return;
 
-      const y = scrollEl.scrollTop;
-      const max = Math.max(body.scrollHeight, html.scrollHeight) - window.innerHeight;
+      const y = window.scrollY;
+      const max = document.body.scrollHeight - window.innerHeight;
 
       if (max <= 0) return;
 
@@ -64,13 +47,13 @@ export default function KioskPage() {
         direction = 1;
         pauseUntil = Date.now() + PAUSE_MS;
       } else {
-        scrollEl.scrollTop += direction * SPEED;
+        window.scrollBy(0, direction * SPEED);
       }
     }, TICK_MS);
 
     return () => {
       clearInterval(id);
-      html.style.overflowY = "";
+      document.documentElement.style.overflowY = "";
     };
   }, [loading]);
 
